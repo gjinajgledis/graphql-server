@@ -1,0 +1,26 @@
+extend type Query {
+    bookById(id: ID!): Book
+    books: [Book]!
+    papers: Paper!
+}
+
+interface Doc {
+    author: Author
+}
+
+type Book implements Doc {
+    id: ID
+    title: String
+    authorId: String
+    author: Author
+}
+
+type Paper implements Doc {
+    id: ID
+    author: Author
+}
+
+type Author {
+    id: ID
+    name: String
+}
