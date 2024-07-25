@@ -1,0 +1,10 @@
+query byId($bookId: ID!) {
+    bookById(id: $bookId) {
+        id
+        title
+        author {
+            name
+        }
+    }
+}
+
