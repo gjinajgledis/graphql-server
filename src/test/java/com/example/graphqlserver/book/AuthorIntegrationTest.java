@@ -1,19 +1,14 @@
 package com.example.graphqlserver.book;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.http.MediaType.APPLICATION_GRAPHQL_RESPONSE;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
-import java.util.List;
-import java.util.UUID;
-import javax.xml.crypto.Data;
-
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.graphql.tester.AutoConfigureGraphQlTester;
+import org.springframework.boot.test.autoconfigure.graphql.tester.AutoConfigureHttpGraphQlTester;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.graphql.test.tester.GraphQlTester;
 import org.springframework.graphql.test.tester.HttpGraphQlTester;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -24,13 +19,13 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import com.example.graphqlserver.book.model.Book;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureGraphQlTester
+@AutoConfigureHttpGraphQlTester
 @AutoConfigureMockMvc
 public class AuthorIntegrationTest {
 
 
     @Autowired
-    private GraphQlTester graphQlTester;
+    private HttpGraphQlTester graphQlTester;
     @Autowired
     private MockMvc mockMvc;
 
@@ -39,6 +34,15 @@ public class AuthorIntegrationTest {
             "	id " +
             "  }" +
             "}";
+
+    private final String BOOK_BY_ID_QUERY_2= """
+            {
+              "query": "query ($id: ID!) {\\n  bookById(id: $id) {\\n    id\\n  }\\n}",
+              "variables": {
+                "id": "book-1"
+              }
+            }
+            """;
 
 
     @Test
@@ -73,8 +77,9 @@ public class AuthorIntegrationTest {
     void applicationJsonBookByIdMockmvc() throws Exception {
 
         mockMvc.perform(MockMvcRequestBuilders.post("/graphql")
-                        .content(BOOK_BY_ID_QUERY)
-                        .accept(MediaType.APPLICATION_JSON))
+                        .content(BOOK_BY_ID_QUERY_2)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(APPLICATION_GRAPHQL_RESPONSE, MediaType.APPLICATION_GRAPHQL))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(jsonPath("$.data.bookById.id").value("book-1"))
@@ -87,7 +92,7 @@ public class AuthorIntegrationTest {
         mockMvc.perform(MockMvcRequestBuilders.post("/graphql")
                         .content(BOOK_BY_ID_QUERY)
                         .contentType("application/graphql")
-                        .accept(MediaType.APPLICATION_JSON))
+                        .accept(MediaType.APPLICATION_JSON, MediaType.APPLICATION_GRAPHQL))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(jsonPath("$.data.bookById.id").value("book-1"))
