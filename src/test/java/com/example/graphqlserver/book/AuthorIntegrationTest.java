@@ -34,6 +34,12 @@ public class AuthorIntegrationTest {
     @Autowired
     private MockMvc mockMvc;
 
+    static final String BOOK_BY_ID_QUERY = "{" +
+            "  bookById(id:\"book-1\") {" +
+            "	id " +
+            "  }" +
+            "}";
+
 
     @Test
     public void bookById() {
@@ -51,10 +57,35 @@ public class AuthorIntegrationTest {
     }
 
     @Test
-    void applicationGraphQlBookById() throws Exception {
+    public void applicationJsonBookById() {
+
+        Book book =  this.graphQlTester
+                .document(BOOK_BY_ID_QUERY)
+                .execute()
+                .path("data.bookById")
+                .entity(Book.class)
+                .get();
+        assertEquals(book.id(), "book-1");
+    }
+
+
+    @Test
+    void applicationJsonBookByIdMockmvc() throws Exception {
 
         mockMvc.perform(MockMvcRequestBuilders.post("/graphql")
-                        .content("{ book }")
+                        .content(BOOK_BY_ID_QUERY)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(jsonPath("$.data.bookById.id").value("book-1"))
+                .andExpect(jsonPath("$.errors").doesNotExist());
+    }
+
+    @Test
+    void applicationGraphqlBookByIdMockmvc() throws Exception {
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/graphql")
+                        .content(BOOK_BY_ID_QUERY)
                         .contentType("application/graphql")
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
