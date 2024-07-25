@@ -54,12 +54,12 @@ public class AuthorIntegrationTest {
     void applicationGraphQlBookById() throws Exception {
 
         mockMvc.perform(MockMvcRequestBuilders.post("/graphql")
-                        .content("{ hello }")
+                        .content("{ book }")
                         .contentType("application/graphql")
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(jsonPath("$.data.hello").value("Hello"))
+                .andExpect(jsonPath("$.data.bookById.id").value("book-1"))
                 .andExpect(jsonPath("$.errors").doesNotExist());
     }
 }
