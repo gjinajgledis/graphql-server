@@ -1,0 +1,22 @@
+input Input1 {
+    name: String!
+    id: Int
+}
+
+query projectReleases($slug: ID!) {
+    project(slug: $slug) {
+        name
+        releases {
+            version
+        }
+    }
+}
+
+query hello1 ($slug: ID!){
+    helloInput(input: $slug) {
+        hello
+        someProduct {
+            productId
+        }
+    }
+}

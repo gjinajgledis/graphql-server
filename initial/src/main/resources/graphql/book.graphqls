@@ -2,11 +2,31 @@ extend type Query {
     bookById(id: ID!): Book
     books: [Book]!
     papers: Paper!
+    hello(name: String!): String!
+}
+
+extend type Mutation {
+    helloInput(input: HelloTest!): HelloPayload!
 }
 
 interface Doc {
     author: Author
 }
+
+input HelloTest {
+    name: String!
+    id: [ID!]!
+}
+
+type HelloPayload {
+    hello: String!
+    someProduct: SomeProduct
+}
+
+type SomeProduct {
+    productId: [Int!]!
+}
+
 
 type Book implements Doc {
     id: ID
